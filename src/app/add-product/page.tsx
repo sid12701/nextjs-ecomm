@@ -22,7 +22,6 @@ async function addProduct(formData: FormData){
     });
 
     redirect("/");
-
 }
 
 
