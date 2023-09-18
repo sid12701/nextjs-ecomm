@@ -1,6 +1,8 @@
 import FormSubmitButton from "@/components/FormSubmitButton";
 import {prisma} from "../../lib/db/prisma"
 import {redirect} from "next/navigation"
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 export  const metadata = {
     title: "Add product-Devil Cart",
 }
@@ -8,6 +10,10 @@ export  const metadata = {
 
 async function addProduct(formData: FormData){
     "use server";
+    const session = await getServerSession(authOptions)
+    if(!session){
+        redirect("/api/auth/signin?callbackUrl=/add-product")
+    }
     const name = formData.get("name")?.toString()
     const description = formData.get("description")?.toString()	
     const imageUrl = formData.get("url")?.toString()
@@ -16,6 +22,7 @@ async function addProduct(formData: FormData){
     if(!name || !description || !imageUrl || !price){
         throw Error("All fields are required")
     }
+    
     
     await prisma.product.create({
         data:{name,description,imageUrl,price}
